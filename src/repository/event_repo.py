@@ -36,6 +36,7 @@ def delete_event_by_ids(event_id: int, user_id: int) -> bool:
 
 
 def update_event_by_ids(event_id: int, user_id: int, new_data) -> bool:
+    
     event = Event.query.filter_by(event_id = event_id, user_id = user_id).first()
 
     if event:

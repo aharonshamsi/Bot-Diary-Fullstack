@@ -50,7 +50,7 @@ def execute_update(user_id: str, data) -> None:
     try:
         user_id_int = int(user_id)
 
-        clean_data = {} # Create file json
+        clean_data = {} # Create dictionary
 
         if 'username' in data:
             clean_data['username'] = str(data['username'])

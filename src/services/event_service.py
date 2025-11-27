@@ -105,10 +105,25 @@ def execute_update_event(event_id: str, user_id: str, data) -> None:
         event_id_int = int(event_id)
         user_id_int = int(user_id)
 
+        valid_data = {} # Create dictionary
+
+        if 'title' in data:
+            valid_data['title'] = str(data['title'])
+
+        if 'description' in data:
+            valid_data['description'] = str(data['description'])
+        
+        if 'start_time' in data:
+            valid_data['start_time'] = str(data['start_time'])
+
+        if 'end_time' in data:
+            valid_data['end_time'] = str(data['end_time'])
+
+            
     except ValueError:
         raise ValueError("Invalid ID format provided.")
     
-    success = update_event_by_ids(event_id_int, user_id_int, data)
+    success = update_event_by_ids(event_id_int, user_id_int, valid_data)
 
     if not success:
         raise ValueError("Event not found or unauthorized for update.")

@@ -59,7 +59,7 @@ def update_user():
 
     user_id = request.args.get("user_id")
 
-    data = request.json
+    data = request.json # dictionary
 
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
