@@ -30,3 +30,29 @@ def delete_user_by_id(user_id: int) -> bool:
     
     return False
 
+
+
+
+def update_user_by_id(user_id: int, clean_data) -> bool:
+    
+    user = User.query.filter_by(user_id=user_id).first()
+
+    if not user:
+        return False
+
+    if clean_data:
+        if 'username' in clean_data:
+            user.username = clean_data['username']
+
+        if 'email' in clean_data:
+            user.email = clean_data['email']
+
+        if 'password_hash' in clean_data:
+            user.password_hash = clean_data['password_hash']
+        
+        db.session.commit()
+        return True
+    
+    return False
+
+

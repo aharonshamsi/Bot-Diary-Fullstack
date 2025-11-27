@@ -1,6 +1,8 @@
 from src.models.user_model import User
 from src.repository.user_repo import insert_user
 from src.repository.user_repo import delete_user_by_id
+from src.repository.user_repo import update_user_by_id
+
 
 def create_user(data) -> User:
 
@@ -44,6 +46,28 @@ def execute_deletion(user_id: str) -> None:
 
     
 
+def execute_update(user_id: str, data) -> None:
+    try:
+        user_id_int = int(user_id)
+
+        clean_data = {} # Create file json
+
+        if 'username' in data:
+            clean_data['username'] = str(data['username'])
+
+        if 'email' in data:
+            clean_data['email'] = str(data['email'])
+
+        if 'password_hash' in data:
+            clean_data['password_hash'] = str(data['password_hash'])
+
+    except ValueError:
+        raise ValueError("Invalid update data format")
+
+    success = update_user_by_id(user_id_int, clean_data)
+
+    if not success:
+        raise ValueError("User not found or unauthorized for update.")
 
 
 
