@@ -1,5 +1,6 @@
 from src.models.user_model import User
 from src.repository.user_repo import insert_user
+from src.repository.user_repo import delete_user_by_id
 
 def create_user(data) -> User:
 
@@ -23,6 +24,26 @@ def create_user(data) -> User:
         raise ValueError("Failed to create user.")
 
     return new_user
+
+
+
+
+def execute_deletion(user_id: str) -> None:
+    
+    try:
+        user_id_int = int(user_id)
+
+    except ValueError:
+        raise ValueError("Invalid ID format provided.")
+    
+    success = delete_user_by_id(user_id_int)
+
+    if not success:
+        raise ValueError("Event not found or unauthorized for deletion.")
+    
+
+    
+
 
 
 
