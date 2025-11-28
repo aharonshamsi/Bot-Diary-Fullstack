@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
+from flask_jwt_extended import JWTManager
 import config
 
 app = Flask(__name__) #  אוביקט שמחזיק את האפליקציה כלומר מנוע של היישום 
@@ -10,7 +11,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 # האוביקט עוכב אחר הזיכרון ושולח אותות, זה הרבה משאבים ולכן כיבנו אותו 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQLALCHEMY_TRACK_MODIFICATIONS
 
+# המפתח הזה הוא הכלי שספריית JWT (JSON Web Token) משתמשת בו כדי להצפין את ה"דרכון" של המשתמש.
+app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY
+
 db = SQLAlchemy(app)  #  אתחול אובייקט מסד הנתונים
+jwt = JWTManager(app) # חיבור הספריה לאפליקציה, כדי שתוכל לייצר טוקנים חדשים לאחר הlogin
+
 
 from src.models import user_model, event_model
 
