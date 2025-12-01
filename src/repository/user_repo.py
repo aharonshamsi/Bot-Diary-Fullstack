@@ -1,6 +1,8 @@
 from app import db
 from sqlalchemy import func 
 from src.models.user_model import User
+from werkzeug.security import generate_password_hash
+
 
 
 def insert_user(new_user: User) -> bool:
@@ -47,8 +49,10 @@ def update_user_by_id(user_id: int, clean_data) -> bool:
         if 'email' in clean_data:
             user.email = clean_data['email']
 
-        if 'password_hash' in clean_data:
-            user.password_hash = clean_data['password_hash']
+        if 'password' in clean_data:
+            password = clean_data['password']
+            password_hash = generate_password_hash(password) # הצפנה 
+            user.password_hash = password_hash
         
         db.session.commit()
         return True

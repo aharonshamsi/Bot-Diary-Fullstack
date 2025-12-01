@@ -10,7 +10,7 @@ def add_event_by_id(new_event):
 
 
 
-def get_event_by_user_id(user_id: int, specific_date = None) -> bool:
+def get_event_by_user(user_id: int, specific_date = None) -> bool:
 
     query = Event.query.filter_by(user_id = user_id)
 

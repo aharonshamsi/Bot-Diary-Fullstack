@@ -1,5 +1,7 @@
 from flask import request, jsonify
 from app import app, db
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity
 
 from src.models.event_model import Event
 from src.services.event_service import create_event
@@ -37,15 +39,17 @@ def add_event():
 
 #===================== Get event ======================
 @app.route("/event", methods = ['GET'])
+@jwt_required()
 def get_event():
-    user_id = request.args.get('user_id')
+    current_user_id = int(get_jwt_identity())
     date = request.args.get('date')
 
-    if not user_id:
-        return jsonify({"error": "Missing user_id parameter in URL"})
+    # מיותר אחרי הטוקן, כי אם אין טוקן יוחזר שגיאה 401 ואם הוא תקין תמיד יש בו user_id
+    # if not current_user_id:
+    #     return jsonify({"error": "Missing user_id parameter in URL"})
     
     try:
-        events_output = fetch_user_events(user_id, date)
+        events_output = fetch_user_events(current_user_id, date)
         return jsonify({"events": events_output}), 200
 
     except ValueError as e:

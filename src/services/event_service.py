@@ -1,13 +1,13 @@
 from datetime import datetime
 from src.models.event_model import Event
 from src.repository.event_repo import delete_event_by_ids
-from src.repository.event_repo import get_event_by_user_id
+from src.repository.event_repo import get_event_by_user
 from src.repository.event_repo import add_event_by_id
 from src.repository.event_repo import update_event_by_ids
 
 
 #=====================================================
-def create_event(data: Event) -> Event:
+def create_event(data: Event) -> None:
 
     try:
         # Validation 
@@ -50,7 +50,7 @@ def fetch_user_events(user_id: str, date = None) -> None:
         user_id_int = int(user_id)
 
     except ValueError:
-        return ValueError("Invalid ID format provided.") # 400
+        raise ValueError("Invalid ID format provided.")
     
     if date:
         try:
@@ -60,12 +60,12 @@ def fetch_user_events(user_id: str, date = None) -> None:
         except ValueError:
             raise ValueError("Invalid date format for filtering. Use YYYY-MM-DD")
     
-    events_list = get_event_by_user_id(user_id_int, date)
+    events_list = get_event_by_user(user_id_int, date)
 
     # 3. עיבוד לתוצאה לוגית/עסקית – במקרה הזה, המרה למילון
-    output = []
+    output_events = []
     for event in events_list:
-        output.append({
+        output_events.append({
             'event_id': event.event_id,
             'title': event.title,
             'start_time': event.start_time.isoformat(),
@@ -73,7 +73,7 @@ def fetch_user_events(user_id: str, date = None) -> None:
             'end_time': event.end_time.isoformat() if event.end_time else None
         })
 
-    return output
+    return output_events
 
 
 

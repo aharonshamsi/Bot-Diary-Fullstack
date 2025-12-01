@@ -1,8 +1,13 @@
 from flask import request, jsonify
 from app import app
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity
+
+
 from src.services.user_service import create_user
 from src.services.user_service import execute_deletion
 from src.services.user_service import execute_update
+
 
 
 
@@ -12,7 +17,7 @@ def add_user():
     data = request.json
 
     if not data or not 'username' in data or \
-        not 'email' in data or not 'password_hash' in data:
+        not 'email' in data or not 'password' in data:
         return jsonify({"error": "Missing required data" }), 400
     
     try:
@@ -32,16 +37,16 @@ def add_user():
 
 
 
+
 #===============================================================
 @app.route("/user", methods = ['DELETE'])
+@jwt_required()
 def delete_user():
-    user_id = request.args.get("user_id")
 
-    if not user_id or not user_id.isdigit():
-        return jsonify({"error": "Missing user_id"}), 400
+    current_user_id = get_jwt_identity()
     
     try:
-        execute_deletion(user_id)
+        execute_deletion(current_user_id)
         return jsonify({"message": "Event deleted successfully!"}), 204
 
     except ValueError as e:
@@ -55,20 +60,21 @@ def delete_user():
 
 #===============================================================
 @app.route("/user", methods = ['PUT'])
+@jwt_required()
 def update_user():
 
-    user_id = request.args.get("user_id")
+    current_user_id = int(get_jwt_identity())
 
-    data = request.json # dictionary
+    data = request.json 
 
-    if not user_id:
-        return jsonify({"error": "Missing user_id"}), 400
+    # if not user_id:
+    #     return jsonify({"error": "Missing user_id"}), 400
     
     if not data:
         return jsonify({"error": "No data provided for update"}), 400
     
     try:
-        execute_update(user_id, data)
+        execute_update(current_user_id, data)
         return jsonify({"message": "User update successfully!"}), 200
 
     except ValueError as e:
@@ -81,7 +87,9 @@ def update_user():
 
 
 
-        
+
+
+
 
     
 
