@@ -66,9 +66,6 @@ def update_user():
     current_user_id = int(get_jwt_identity())
 
     data = request.json 
-
-    # if not user_id:
-    #     return jsonify({"error": "Missing user_id"}), 400
     
     if not data:
         return jsonify({"error": "No data provided for update"}), 400

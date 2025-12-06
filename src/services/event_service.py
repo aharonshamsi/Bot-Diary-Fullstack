@@ -7,11 +7,10 @@ from src.repository.event_repo import update_event_by_ids
 
 
 #=====================================================
-def create_event(data: Event) -> None:
+def create_event(current_user_id: int, data: Event) -> None:
 
     try:
         # Validation 
-        user_id_int = int(data['user_id'])
         title_str = str(data['title'])
         start_time_str = str(data['start_time'])
 
@@ -20,18 +19,22 @@ def create_event(data: Event) -> None:
         end_time_str = data.get('end_time')
 
         if description_str is not None:
-            end_time_str = str(description_str)
+            description_str = str(description_str)
         
         if end_time_str is not None:
             end_time_str = str(end_time_str)
 
+        # validate start_time הוא זמן תקין
+        start_time_dt = datetime.fromisoformat(start_time_str)
+        
+
     except ValueError:
-        raise ValueError("Invalid user_id format")
+        raise ValueError("Invalid event data format")
 
     new_event = Event(
-    user_id = user_id_int,
+    user_id = current_user_id,
     title = title_str,
-    start_time = start_time_str,
+    start_time = start_time_dt,
     description=description_str,
     end_time = end_time_str
     )
@@ -78,18 +81,17 @@ def fetch_user_events(user_id: str, date = None) -> None:
 
 
 
-def execute_deletion(event_id: str, user_id: str) -> None:
+def execute_deletion(current_user_id: int, event_id: str) -> None:
 
     try:
         event_id_int = int(event_id)
-        user_id_int = int(user_id)
 
     except ValueError:
         # מעלים שגיאה גנרית כדי שה-Route יטפל ב-400
         raise ValueError("Invalid ID format provided.") # 400
         
     # 2. קריאה ל-Repository לבצע את המחיקה
-    success = delete_event_by_ids(event_id_int, user_id_int)
+    success = delete_event_by_ids(current_user_id, event_id_int)
     
     # 3. טיפול בתוצאה: אם המחסנאי נכשל, מעלים שגיאה מפורטת
     if not success:
@@ -99,11 +101,10 @@ def execute_deletion(event_id: str, user_id: str) -> None:
 
 
 
-def execute_update_event(event_id: str, user_id: str, data) -> None:
+def execute_update_event(current_event_id: int, event_id: str, data) -> None:
 
     try:
         event_id_int = int(event_id)
-        user_id_int = int(user_id)
 
         valid_data = {} # Create dictionary
 
@@ -123,7 +124,7 @@ def execute_update_event(event_id: str, user_id: str, data) -> None:
     except ValueError:
         raise ValueError("Invalid ID format provided.")
     
-    success = update_event_by_ids(event_id_int, user_id_int, valid_data)
+    success = update_event_by_ids(current_event_id, event_id_int, valid_data)
 
     if not success:
         raise ValueError("Event not found or unauthorized for update.")

@@ -12,15 +12,17 @@ from src.services.event_service import execute_update_event
 
 #===================== Add event ======================
 @app.route("/event", methods=['POST']) # end point
+@jwt_required()
 def add_event():
+
+    current_user_id = int(get_jwt_identity())
     data = request.json # שומרים את הבקשה שהגיעה 
 
-    if not data or not 'user_id' in data or \
-        not 'title' in data or not 'start_time' in data:
+    if not data or not 'title' in data or not 'start_time' in data:
         return jsonify({"error": "Missing required data"}), 400
     
     try:
-        new_event = create_event(data)
+        new_event = create_event(current_user_id, data)
 
         return jsonify({
             "message": "Event added successfully!",
@@ -63,16 +65,17 @@ def get_event():
 
 #===================== Delete event ======================
 @app.route("/event", methods = ['DELETE'])
+@jwt_required()
 def delete_event():
 
+    current_user_id = int(get_jwt_identity())
     event_id = request.args.get('event_id')
-    user_id = request.args.get('user_id')
 
-    if not event_id or not user_id:
-        return jsonify({"error": "Missing event_id or user_id"}), 400
+    if not event_id:
+        return jsonify({"error": "Missing event_id"}), 400
     
     try:
-        execute_deletion(event_id, user_id) 
+        execute_deletion(current_user_id, event_id) 
         return jsonify({"message": "Event deleted successfully!"}), 200
 
     except ValueError as e:
@@ -88,22 +91,23 @@ def delete_event():
 
 #===================== Update event ======================
 @app.route("/event", methods = ['PUT'])
+@jwt_required()
 def update_event():
 
+    current_event_id = int(get_jwt_identity())
     event_id = request.args.get('event_id')
-    user_id = request.args.get('user_id')
 
     # נתונים לשינוי
     data = request.json
 
-    if not event_id or not user_id:
-        return jsonify({"error": "Missing event_id or user_id"}), 400
+    if not event_id:
+        return jsonify({"error": "Missing event_id"}), 400
     
     if not data:
         return jsonify({"error": "No data provided for update"}), 400
     
     try:
-        execute_update_event(event_id, user_id, data)
+        execute_update_event(current_event_id, event_id, data)
         return jsonify({"message": "Event update successfully!"}), 200
     
     except ValueError as e:

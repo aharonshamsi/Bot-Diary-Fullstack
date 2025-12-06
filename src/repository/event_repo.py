@@ -20,7 +20,7 @@ def get_event_by_user(user_id: int, specific_date = None) -> bool:
 
 
 
-def delete_event_by_ids(event_id: int, user_id: int) -> bool:
+def delete_event_by_ids(user_id: int, event_id: int) -> bool:
     # שאילתה שמוודאת שהאירוע שייך למשתמש (אבטחה)
     event_to_delete = db.session.execute(
         db.select(Event).filter_by(event_id=event_id, user_id=user_id)
@@ -35,9 +35,9 @@ def delete_event_by_ids(event_id: int, user_id: int) -> bool:
 
 
 
-def update_event_by_ids(event_id: int, user_id: int, new_data) -> bool:
+def update_event_by_ids(current_event_id: int, event_id: int, new_data) -> bool:
     
-    event = Event.query.filter_by(event_id = event_id, user_id = user_id).first()
+    event = Event.query.filter_by(event_id = event_id, user_id = current_event_id).first()
 
     if event:
         if 'title' in new_data:

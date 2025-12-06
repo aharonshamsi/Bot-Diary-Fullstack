@@ -9,6 +9,7 @@ app = Flask(__name__) #  אוביקט שמחזיק את האפליקציה כל�
 
 # MySQL שורת החיבור של השרת אל מסד הנתונים 
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
+
 # האוביקט עוכב אחר הזיכרון ושולח אותות, זה הרבה משאבים ולכן כיבנו אותו 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQLALCHEMY_TRACK_MODIFICATIONS
 
