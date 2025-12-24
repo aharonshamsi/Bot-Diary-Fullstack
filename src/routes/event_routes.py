@@ -10,6 +10,13 @@ from src.services.event_service import execute_deletion
 from src.services.event_service import execute_update_event
 
 
+#================================================================================================
+#================================================================================================
+
+# ===== openai אצל הבוט עם התממשקות ל endpoint כלשהוגדרו עד עכשיו הם לפני הגדרת endpointכל ה ======
+#================================================================================================
+
+
 #===================== Add event ======================
 @app.route("/event", methods=['POST']) # end point
 @jwt_required()
@@ -36,7 +43,7 @@ def add_event():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-
+    
 
 
 #===================== Get event ======================
