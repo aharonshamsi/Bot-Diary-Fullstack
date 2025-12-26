@@ -6,6 +6,11 @@ from src.repository.event_repo import add_event_by_id
 from src.repository.event_repo import update_event_by_ids
 
 
+import re
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
+
 #=====================================================
 def create_event(current_user_id: int, data: Event) -> None:
 
@@ -40,8 +45,55 @@ def create_event(current_user_id: int, data: Event) -> None:
     )
 
     add_event_by_id(new_event)
+    # return new_event
 
-    return new_event
+    # function callהמרה לגייסון בשביל ה 
+    new_event_json = {
+        "user_id": new_event.user_id,
+        "title": new_event.title,
+        "start_time": new_event.start_time.isoformat(),  # הפוך ל-string
+        "description": new_event.description,
+        "end_time": new_event.end_time.isoformat() if new_event.end_time else None
+    }
+
+    return new_event_json
+
+
+
+# מחלץ שעה ותאריך ממה שחזר מהמודל
+def resolve_time_extended(time_reference: str) -> datetime:
+    now = datetime.utcnow()
+    time_reference = time_reference.lower().strip()
+    
+    # שעות ודקות
+    hour_match = re.search(r"(\d{1,2}):(\d{2})", time_reference)
+    if hour_match:
+        hour = int(hour_match.group(1))
+        minute = int(hour_match.group(2))
+    else:
+        hour = 0
+        minute = 0
+    
+    # ימים / שבועות / חודשים
+    day_match = re.search(r"(\d+)\s*day", time_reference)
+    if day_match:
+        days = int(day_match.group(1))
+        return (now + relativedelta(days=days, hour=hour, minute=minute, second=0, microsecond=0))
+    
+    week_match = re.search(r"(\d+)\s*week", time_reference)
+    if week_match:
+        weeks = int(week_match.group(1))
+        return (now + relativedelta(weeks=weeks, hour=hour, minute=minute, second=0, microsecond=0))
+    
+    if "month" in time_reference:
+        return (now + relativedelta(months=1, hour=hour, minute=minute, second=0, microsecond=0))
+    
+    if "tomorrow" in time_reference:
+        return (now + relativedelta(days=1, hour=hour, minute=minute, second=0, microsecond=0))
+
+    # ברירת מחדל
+    return now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
 
 
 
@@ -101,7 +153,7 @@ def execute_deletion(current_user_id: int, event_id: str) -> None:
 
 
 
-def execute_update_event(current_event_id: int, event_id: str, data) -> None:
+def execute_update_event(current_event_id: int, event_id: str, data: dict) -> None:
 
     try:
         event_id_int = int(event_id)

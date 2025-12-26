@@ -17,7 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Config.SQLALCHEMY_TRACK_MODIFICAT
 # המפתח הזה הוא הכלי שספריית JWT (JSON Web Token) משתמשת בו כדי להצפין את ה"דרכון" של המשתמש.
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 
-# app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=5) # להגדיר כמה זמן יהיה תקף הטוקן, ולאחר זמן זה ידרש לוגין מחדש, הברירת מחדל היא 15 דקות
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1) # זמן חיבור הטוקן הוא שעה
 
 
 
