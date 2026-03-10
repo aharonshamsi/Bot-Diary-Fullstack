@@ -12,5 +12,9 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL;
 // Public auth token (should ideally be handled securely)
 export const AUTH_TOKEN = process.env.EXPO_PUBLIC_AUTH_TOKEN;
 
+// Local register endpoint
+export const REGISTER_URL = "http://127.0.0.1:5000/user";
+
 // Local login endpoint
 export const LOGIN_URL = 'http://127.0.0.1:5000/login';
+

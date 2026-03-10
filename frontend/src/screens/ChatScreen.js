@@ -80,7 +80,7 @@ export const ChatScreen = ({ userToken, onLogout }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with logout */}
-      <Header title="יומן חכם - סוכן אישי" onLogout={onLogout} />
+      <Header title="Agent Desk" onLogout={onLogout} />
 
       <View style={styles.innerContainer}>
         <GiftedChat
