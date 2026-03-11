@@ -9,7 +9,7 @@ from datetime import timedelta
 app = Flask(__name__) 
 
 # Enable CORS to allow requests from the Frontend
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # --- Database Setup ---
 # URL for Flask to connect to the MySQL Docker container
@@ -43,6 +43,7 @@ from src.routes import user_routes
 from src.routes import auth_routes
 
 from src.routes import bot_routes
+import src.routes.transcription_routes
 
 
 @app.route("/")

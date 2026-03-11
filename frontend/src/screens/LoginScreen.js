@@ -12,31 +12,41 @@ import {
   ScrollView 
 } from 'react-native';
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../constants/colors';
 import { LOGIN_URL, REGISTER_URL } from '../constants/config';
 
+/**
+ * LoginScreen Component
+ * Handles user authentication including login and registration flows.
+ * Provides full cross-platform support (iOS, Android, Web).
+ * Uses AsyncStorage for token persistence.
+ *
+ * @param {Object} props
+ * @param {function(string): void} props.onLoginSuccess Callback invoked with token upon successful login
+ */
 export const LoginScreen = ({ onLoginSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true); 
+  const [isLogin, setIsLogin] = useState(true); // Toggle between Login / Register
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Handle form submission for login or registration.
+   * Performs validation, sends request to backend, and handles token storage.
+   */
   const handleSubmit = async () => {
-    // בדיקת תקינות בסיסית
+    // Basic input validation
     if (!username || !password || (!isLogin && !email)) {
       const msg = 'נא למלא את כל השדות הנדרשים';
-      if (Platform.OS === 'web') alert(msg);
-      else Alert.alert('שגיאה', msg);
+      Platform.OS === 'web' ? alert(msg) : Alert.alert('שגיאה', msg);
       return;
     }
 
     setLoading(true);
     const url = isLogin ? LOGIN_URL : REGISTER_URL;
-    console.log("REGISTER_URL:", REGISTER_URL);
 
-    // בניית האובייקט לשליחה
     const payload = isLogin 
       ? { username, password } 
       : { username, email, password };
@@ -48,38 +58,32 @@ export const LoginScreen = ({ onLoginSuccess }) => {
       console.log("Server Response:", response.data);
 
       if (isLogin) {
-        // --- לוגיקת כניסה ---
+        // --- Login logic ---
         const token = response.data.access_token;
         if (token) {
           try {
-            await SecureStore.setItemAsync('userToken', token);
+            // Store token for cross-platform persistence
+            await AsyncStorage.setItem('userToken', token);
+            console.log("Token saved successfully to AsyncStorage");
           } catch (e) { 
-            console.warn("SecureStore not supported/failed", e); 
+            console.warn("AsyncStorage failed", e); 
           }
           onLoginSuccess(token);
         }
       } else {
-        // --- לוגיקת הרשמה ---
+        // --- Registration success flow ---
         const successMsg = 'החשבון נוצר בהצלחה! כעת ניתן להתחבר.';
-        
-        if (Platform.OS === 'web') {
-          alert(successMsg);
-        } else {
-          Alert.alert('הצלחה!', successMsg);
-        }
+        Platform.OS === 'web' ? alert(successMsg) : Alert.alert('הצלחה!', successMsg);
 
-        // איפוס והעברה למסך התחברות
+        // Reset form and switch to login screen
         setIsLogin(true);
         setPassword('');
         setEmail('');
       }
     } catch (error) {
       console.error("Auth Error:", error.response?.data || error.message);
-      
       const errorMsg = error.response?.data?.error || error.response?.data?.message || 'אירעה שגיאה בחיבור לשרת';
-      
-      if (Platform.OS === 'web') alert(errorMsg);
-      else Alert.alert(isLogin ? 'התחברות נכשלה' : 'הרשמה נכשלה', errorMsg);
+      Platform.OS === 'web' ? alert(errorMsg) : Alert.alert(isLogin ? 'התחברות נכשלה' : 'הרשמה נכשלה', errorMsg);
     } finally {
       setLoading(false);
     }
@@ -160,6 +164,9 @@ export const LoginScreen = ({ onLoginSuccess }) => {
   );
 };
 
+// ---------------------------
+// Styles
+// ---------------------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,
